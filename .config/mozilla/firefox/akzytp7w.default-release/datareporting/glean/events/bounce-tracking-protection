@@ -1,6 +1,0 @@
-{"timestamp":38703047,"category":"bounce.tracking.protection","name":"purge_action","extra":{"require_stateful_bounces":"false","is_dry_run":"true","bounce_time":"1778115085","glean_timestamp":"1778154852078","success":"true","site_host":"youtube.com"}}
-{"timestamp":45902732,"category":"bounce.tracking.protection","name":"purge_action","extra":{"glean_timestamp":"1778162051763","require_stateful_bounces":"false","site_host":"raw.githubusercontent.com","is_dry_run":"true","bounce_time":"1778158311","success":"true"}}
-{"timestamp":45902732,"category":"bounce.tracking.protection","name":"purge_action","extra":{"bounce_time":"1778155609","require_stateful_bounces":"false","glean_timestamp":"1778162051763","success":"true","site_host":"remind.com","is_dry_run":"true"}}
-{"timestamp":50089599,"category":"bounce.tracking.protection","name":"purge_action","extra":{"glean_timestamp":"1778166239290","bounce_time":"1778159467","success":"true","require_stateful_bounces":"false","site_host":"youtube.com","is_dry_run":"true"}}
-{"timestamp":83395162,"category":"glean","name":"restarted","extra":{"glean_timestamp":"1778199544854","glean.startup.date":"2026-05-07T20:19-04:00"},"execution_counter":1}
-{"timestamp":123268118,"category":"glean","name":"restarted","extra":{"glean_timestamp":"1778239417810","glean.startup.date":"2026-05-08T07:23-04:00"},"execution_counter":2}
