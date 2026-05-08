@@ -1,5 +1,11 @@
 #!/bin/bash
+
 set -e
+
+dotfiles() {
+    /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
+}
+
 dotfiles add -u
 dotfiles commit -m "sync: $(date '+%Y-%m-%d %H:%M')" || echo "Nothing to commit"
 dotfiles push

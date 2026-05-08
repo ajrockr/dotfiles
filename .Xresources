@@ -1,0 +1,23 @@
+! --- Font Settings ---
+!URxvt*font:xft:DejaVuSansMono:size=12
+!URxvt*boldFont: xft:DejaVuSansMono:bold:size=12
+URxvt*font: xft:JetBrainsMono:size=12
+
+! --- Appearance ---
+URxvt*background: #1e1e1e
+URxvt*foreground: #ffffff
+URxvt*cursorColor: #ffffff
+URxvt*geometry: 80x24
+Xft.dpi: 96
+
+! --- Scrolling Buffer ---
+URxvt*scrollBar: False
+URxvt*saveLines: 2000
+URxvt*scrollTtyOutput: False
+URxvt*scrollWithBuffer: True
+URxvt*scrollTtyKeypress: True
+
+! --- Perl Extensions ---
+URxvt*perl-ext-common: default,matcher,resize-font
+URxvt*url-launcher: /usr/bin/firefox
+URxvt*matcher.button: 1
