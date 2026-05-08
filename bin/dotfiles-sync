@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+dotfiles add -u
+dotfiles commit -m "sync: $(date '+%Y-%m-%d %H:%M')" || echo "Nothing to commit"
+dotfiles push
