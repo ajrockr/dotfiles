@@ -6,6 +6,8 @@ dotfiles() {
     /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
 }
 
+MSG="${1:+$1 - }$(date '+%Y-%m-%d %H:%M')"
+
 dotfiles add -u
-dotfiles commit -m "sync: $(date '+%Y-%m-%d %H:%M')" || echo "Nothing to commit"
+dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
 dotfiles push
