@@ -7,8 +7,11 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
 PS1='[\u@\h \W]\$ '
 
 eval "$(ssh-agent -s)" &>/dev/null
 ssh-add ~/.ssh/id_ed25519 2>/dev/null
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+export PATH="$HOME/bin:$PATH"
