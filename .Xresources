@@ -1,6 +1,6 @@
 ! --- Font Settings ---
 !URxvt*font:xft:DejaVuSansMono:size=12
-!URxvt*boldFont: xft:DejaVuSansMono:bold:size=12
+URxvt*boldFont: xft:JetBrainsMono:bold:size=12
 URxvt*font: xft:JetBrainsMono:size=12
 
 ! --- Appearance ---
@@ -8,7 +8,6 @@ URxvt*background: #1e1e1e
 URxvt*foreground: #ffffff
 URxvt*cursorColor: #ffffff
 URxvt*geometry: 80x24
-Xft.dpi: 96
 
 ! --- Scrolling Buffer ---
 URxvt*scrollBar: False
