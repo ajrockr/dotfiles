@@ -1,0 +1,30 @@
+#!/bin/bash
+
+NOTES_DIR="$HOME/notes"
+
+mkdir -p "$NOTES_DIR"
+
+if [ -n "$1" ]; then
+    FILE="$NOTES_DIR/$1.md"
+else
+    FILE=$(find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n" \
+        | sort \
+        | fzf)
+
+    [  -z "$FILE" ] && exit 0
+
+    FILE="$NOTES_DIR/$FILE"
+fi
+
+case "$FILE" in
+    *.md)
+        if command -v glow >/dev/null 2>&1; then
+            glow "$FILE"
+        else
+            less "$FILE"
+        fi
+        ;;
+    *)
+        less "$FILE"
+        ;;
+esac

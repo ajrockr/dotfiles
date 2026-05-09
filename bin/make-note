@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: ${basename "$0"} <filename>"
+    exit 1
+fi
+
+NOTES_DIR="$HOME/notes"
+
+mkdir -p "$NOTES_DIR"
+
+vim "$NOTES_DIR/$1.md"

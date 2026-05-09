@@ -1,0 +1,13 @@
+#!/bin/bash
+
+NOTES_DIR="$HOME/notes"
+
+if [ ! -d "$NOTES_DIR" ]; then
+    echo "No notes directory found at $NOTES_DIR"
+    exit 1
+fi
+
+echo "Notes:"
+echo "------"
+
+find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n" | sort
