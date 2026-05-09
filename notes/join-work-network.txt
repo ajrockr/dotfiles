@@ -1,9 +1,0 @@
-When needing to join a hidden WPA2 Enterprise wireless network, use nmcli
-
-nmcli connect add type wifi con-name "<ConnectionName>" ifname wlan0 ssid "<SSIDName>"
-
-nmcli connection modify "<ConnectionName>" wifi-sec.key-mgmt wpa-eap 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity "<adusername>" 802-1x.password "<adpassword>"
-
-nmcli connection modify "<ConnectionName>" connection.autoconnect yes
-
-nmcli connection up "<ConnectionName>"
