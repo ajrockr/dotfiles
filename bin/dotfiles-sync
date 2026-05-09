@@ -6,6 +6,16 @@ dotfiles() {
     /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
 }
 
+AUTO_STAGE=(
+    "$HOME/notes/"
+    "$HOME/.vim/"
+    "$HOME/.config/i3/"
+    "$HOME/.config/i3status/"
+    "$HOME/.config/polybar/"
+    "$HOME/.config/rofi/"
+    "$HOME/.config/ranger/"
+)
+
 usage() {
     echo "Usage:"
     echo "  dotfiles-sync -c \"message\"    Commit the custom message and push"
@@ -17,6 +27,9 @@ usage() {
 
 if [[ $# -eq 0 ]]; then
     MSG="$(DATE '+%Y-%m-%d %H:%M')"
+    for dir in "${AUTO_STAGE[@]}"; do
+        dotfiles add "$dir"
+    done
     dotfiles add -u
     dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
     dotfiles push
@@ -27,6 +40,9 @@ case "$1" in
     -c)
         [[ -z "$2" ]] && { echo "Error: -c requires a message"; usage; }
         MSG="$2 - $(date '+%Y-%m-%d %H:%M')"
+        for dir in "${AUTO_STAGE[@]}"; do
+            dotfiles add "$dir"
+        done
         dotfiles add -u
         dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
         dotfiles push
@@ -35,7 +51,7 @@ case "$1" in
         [[ -z "$2" ]] && { echo "Error: -a requires a file path"; usage; }
         dotfiles add "$2"
         echo "Tracked: $2"
-        echo "Run dotfiles-sync or dotfiles-sync -c \"message\" to commit and push."
+        echo "Run dotfiles-sync -c \"message\" to commit and push."
         ;;
     -s)
         dotfiles status
