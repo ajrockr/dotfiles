@@ -6,8 +6,49 @@ dotfiles() {
     /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
 }
 
-MSG="${1:+$1 - }$(date '+%Y-%m-%d %H:%M')"
+usage() {
+    echo "Usage:"
+    echo "  dotfiles-sync -c \"message\"    Commit the custom message and push"
+    echo "  dotfiles-sync -a <file|dir>     Track a new file/folder"
+    echo "  dotfiles-sync -s                Show working tree status"
+    echo "  dotfiles-sync -l [n]            Show last n commits (default 10)"
+    exit 1
+}
 
-dotfiles add -u
-dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
-dotfiles push
+if [[ $# -eq 0 ]]; then
+    MSG="$(DATE '+%Y-%m-%d %H:%M')"
+    dotfiles add -u
+    dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
+    dotfiles push
+    exit 0
+fi
+
+case "$1" in
+    -c)
+        [[ -z "$2" ]] && { echo "Error: -c requires a message"; usage; }
+        MSG="$2 - $(date '+%Y-%m-%d %H:%M')"
+        dotfiles add -u
+        dotfiles commit -m "sync: $MSG" || echo "Nothing to commit"
+        dotfiles push
+        ;;
+    -a)
+        [[ -z "$2" ]] && { echo "Error: -a requires a file path"; usage; }
+        dotfiles add "$2"
+        echo "Tracked: $2"
+        echo "Run dotfiles-sync or dotfiles-sync -c \"message\" to commit and push."
+        ;;
+    -s)
+        dotfiles status
+        ;;
+    -l)
+        N="${2:-10}"
+        dotfiles log --oneline --graph --decorate -"$N"
+        ;;
+    -h|--help)
+        usage
+        ;;
+    *)
+        echo "Unknown option: $1"
+        usage
+        ;;
+esac
