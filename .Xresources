@@ -1,13 +1,41 @@
 ! --- Font Settings ---
-!URxvt*font:xft:DejaVuSansMono:size=12
-URxvt*boldFont: xft:JetBrainsMono:bold:size=12
-URxvt*font: xft:JetBrainsMono:size=12
+URxvt*boldFont: xft:JetBrainsMono Nerd Font:bold:size=12
+URxvt*font: xft:JetBrainsMono Nerd Font:size=12
 
 ! --- Appearance ---
-URxvt*background: #1e1e1e
-URxvt*foreground: #ffffff
-URxvt*cursorColor: #ffffff
-URxvt*geometry: 80x24
+URxvt*background:  #0f0f0f
+URxvt*foreground:  #c0c0c0
+URxvt*cursorColor: #00aaff
+URxvt*cursorBlink: true
+URxvt*geometry:    90x26
+URxvt*borderLess:  false
+URxvt*internalBorder: 8
+
+! --- 16-color Neon Dark palette ---
+! Black
+URxvt*color0:  #0f0f0f
+URxvt*color8:  #3d3d3d
+! Red (neon)
+URxvt*color1:  #cc1133
+URxvt*color9:  #ff2244
+! Green
+URxvt*color2:  #229944
+URxvt*color10: #33cc66
+! Yellow
+URxvt*color3:  #cc9900
+URxvt*color11: #ffcc00
+! Blue (neon)
+URxvt*color4:  #0077cc
+URxvt*color12: #00aaff
+! Magenta
+URxvt*color5:  #7722cc
+URxvt*color13: #9933ff
+! Cyan
+URxvt*color6:  #007799
+URxvt*color14: #00ccff
+! White
+URxvt*color7:  #888888
+URxvt*color15: #f0f0f0
 
 ! --- Scrolling Buffer ---
 URxvt*scrollBar: False

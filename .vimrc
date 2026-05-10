@@ -6,7 +6,8 @@ so ~/.vim/plugins.vim							"Load plugins.
 set termguicolors
 syntax on
 "colorscheme unokai
-colorscheme catppuccin
+"colorscheme catppuccin
+colorscheme neon
 
 set backspace=indent,eol,start						"Make backspace delete indentation, whitespace ect
 let mapleader= ','							"Comma should be the leader

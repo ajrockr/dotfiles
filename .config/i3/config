@@ -30,7 +30,7 @@ exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,s
 exec_always --no-startup-id feh --bg-fill ~/wallpapers/trees.jpg
 
 set $mod Mod1
-set $search "rofi -show drun -show-icons true -theme catppuccin-default"
+set $search "rofi -show drun -show-icons true -theme neon"
 
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
@@ -57,8 +57,12 @@ set $down k
 set $left j
 set $right semicolon
 
-gaps inner 5
-gaps outer 2
+gaps inner 10
+gaps outer 5
+
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
 
 # use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -212,40 +216,23 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # --- colors ---
-set $rosewater #f4dbd6
-set $flamingo #f0c6c6
-set $pink #f5bde6
-set $mauve #c6a0f6
-set $red #ed8796
-set $maroon #ee99a0
-set $peach #f5a97f
-set $yellow #eed49f
-set $green #a6da95
-set $teal #8bd5ca
-set $sky #91d7e3
-set $sapphire #7dc4e4
-set $blue #8aadf4
-set $lavender #b7bdf8
-set $text #cad3f5
-set $subtext1 #b8c0e0
-set $subtext0 #a5adcb
-set $overlay2 #939ab7
-set $overlay1 #8087a2
-set $overlay0 #6e738d
-set $surface2 #5b6078
-set $surface1 #494d64
-set $surface0 #363a4f
-set $base #24273a
-set $mantle #1e2030
-set $crust #181926
+set $bg      #0f0f0f
+set $bg1     #1a1a1a
+set $surface #222222
+set $grey    #3d3d3d
+set $grey2   #666666
+set $fg      #c0c0c0
+set $white   #f0f0f0
+set $red     #ff2244
+set $blue    #00aaff
 
-# target                 title     bg    text   indicator  border
-client.focused           $lavender $base $text  $rosewater $lavender
-client.focused_inactive  $overlay0 $base $text  $rosewater $overlay0
-client.unfocused         $overlay0 $base $text  $rosewater $overlay0
-client.urgent            $peach    $base $peach $overlay0  $peach
-client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
-client.background        $base
+# target                 title    bg       text    indicator  border
+client.focused           $blue    $surface $white  $blue      $blue
+client.focused_inactive  $grey    $bg1     $fg     $grey      $grey
+client.unfocused         $bg      $bg      $grey2  $bg        $bg
+client.urgent            $red     $bg1     $white  $red       $red
+client.placeholder       $grey    $bg      $fg     $grey      $grey
+client.background        $bg
 
 # exec polybar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
