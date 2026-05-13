@@ -9,10 +9,7 @@ Personal scripts tracked at `~/bin/`. All are on `PATH` via `.bashrc` (`$HOME/bi
 | Script | Purpose |
 |--------|---------|
 | `~/bin/dotfiles-sync` | Commit and push dotfiles to GitHub |
-| `~/bin/make-note` | Create or edit a note in `~/notes/` |
-| `~/bin/view-note` | View a note with glow (or less as fallback) |
-| `~/bin/list-notes` | List all notes in `~/notes/` |
-| `~/bin/delete-note` | Interactively delete a note |
+| `~/bin/notes` | Unified note management — create, view, delete, push |
 
 ---
 
@@ -22,7 +19,7 @@ Personal scripts tracked at `~/bin/`. All are on `PATH` via `.bashrc` (`$HOME/bi
 sudo pacman -S git fzf glow
 ```
 
-> `fzf` is used by `view-note` and `delete-note` for interactive fuzzy selection when no filename is given. `glow` renders markdown notes in the terminal — `view-note` falls back to `less` if it's not installed.
+> `fzf` is used by `notes` for interactive fuzzy selection when no filename is given. `glow` renders markdown in the terminal — `notes` falls back to `less` if it's not installed.
 
 ---
 
@@ -62,54 +59,31 @@ Auto-staged directories (committed on every sync):
 
 ---
 
-### `make-note`
+### `notes`
 
-```bash
-make-note <filename>
-```
+Unified note management script. All notes live in `~/notes/` and use `.md` extension — omit it in all arguments.
 
-Opens `~/notes/<filename>.md` in vim. Creates `~/notes/` if it doesn't exist. No `.md` extension needed in the argument — it's appended automatically.
+| Usage | Effect |
+|-------|--------|
+| `notes` | fzf picker → view selected note |
+| `notes <name>` | View a specific note |
+| `notes -n <name>` | Create or edit a note in vim |
+| `notes -d [name]` | Delete a note (fzf picker if no name given) |
+| `notes -s` | Commit and push `~/notes/` to GitHub |
 
----
-
-### `view-note`
-
-```bash
-view-note [filename]   # filename without .md extension
-view-note              # fuzzy-pick from all notes with fzf
-```
-
-Renders `.md` files with `glow` if available, otherwise falls back to `less`. Non-markdown files always use `less`.
-
----
-
-### `list-notes`
-
-```bash
-list-notes
-```
-
-Prints all files in `~/notes/` sorted alphabetically. No arguments.
-
----
-
-### `delete-note`
-
-```bash
-delete-note [filename]   # filename without .md extension
-delete-note              # fuzzy-pick from all notes with fzf
-```
-
-Prompts for confirmation before deleting. Accepts `y`, `Y`, `yes`, or `YES` — anything else cancels.
+- View renders `.md` files with `glow` if available, falls back to `less`.
+- Delete prompts for confirmation — accepts `y`, `Y`, `yes`, `YES`, anything else cancels.
+- `-s` only commits `~/notes/` — use `dotfiles-sync` for full dotfiles push.
 
 ---
 
 ## Verify after setup
 
 - [ ] `which dotfiles-sync` returns `~/bin/dotfiles-sync`
+- [ ] `which notes` returns `~/bin/notes`
 - [ ] `dotfiles-sync -s` shows repo status without errors
-- [ ] `make-note test` opens vim at `~/notes/test.md`
-- [ ] `list-notes` prints the notes directory contents
-- [ ] `view-note` opens fzf picker (requires `fzf`)
-- [ ] `view-note` renders markdown with glow (requires `glow`)
-- [ ] `delete-note` prompts before removing a file
+- [ ] `notes -n test` opens vim at `~/notes/test.md`
+- [ ] `notes` opens fzf picker (requires `fzf`)
+- [ ] `notes` renders markdown with glow (requires `glow`)
+- [ ] `notes -d` prompts before removing a file
+- [ ] `notes -s` commits and pushes to GitHub
