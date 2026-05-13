@@ -9,6 +9,8 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+[ -f ~/.dircolors ] && eval "$(dircolors ~/.dircolors)"
+
 PS1='[\u@\h \W]\$ '
 
 eval "$(ssh-agent -s)" &>/dev/null
