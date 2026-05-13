@@ -55,7 +55,6 @@ Auto-staged directories (committed on every sync):
 ~/.config/polybar/   ~/.config/rofi/   ~/.config/ranger/
 ```
 
-> **Known bug:** The no-argument path uses `DATE` (uppercase) instead of `date`. The timestamp in auto-commits will fail silently — the commit still happens but with a broken date string in the message. The `-c` flag uses `date` (lowercase) correctly.
 
 ---
 
