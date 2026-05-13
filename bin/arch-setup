@@ -34,7 +34,7 @@ PACMAN_PKGS=(
     xorg-fonts-75dpi xorg-fonts-100dpi xorg-bdftopcf
     xorg-server-xephyr xorg-server-xvfb xorg-server-xnest
     xsettingsd xss-lock numlockx xdg-user-dirs xdg-utils
-    # WM / bar
+    # WM / bar — i3-gaps merged into i3-wm since v4.22, no separate package needed
     i3-wm polybar feh dex i3lock i3status i3blocks dmenu
     # terminal
     rxvt-unicode xterm
