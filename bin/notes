@@ -1,0 +1,77 @@
+#!/bin/bash
+
+NOTES_DIR="$HOME/notes"
+
+dotfiles() {
+    /usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME" "$@"
+}
+
+usage() {
+    echo "Usage:"
+    echo "  notes              Pick and view a note (fzf)"
+    echo "  notes <name>       View a specific note"
+    echo "  notes -n <name>    Create or edit a note"
+    echo "  notes -d [name]    Delete a note (fzf if no name given)"
+    echo "  notes -s           Commit and push notes to GitHub"
+    exit 1
+}
+
+view_note() {
+    local file="$1"
+    case "$file" in
+        *.md) command -v glow >/dev/null 2>&1 && glow "$file" || less "$file" ;;
+        *)    less "$file" ;;
+    esac
+}
+
+pick_note() {
+    find "$NOTES_DIR" -maxdepth 1 -type f -printf "%f\n" | sort | fzf
+}
+
+case "$1" in
+    -n)
+        [[ -z "$2" ]] && { echo "Error: -n requires a note name"; usage; }
+        mkdir -p "$NOTES_DIR"
+        vim "$NOTES_DIR/$2.md"
+        ;;
+    -d)
+        [[ ! -d "$NOTES_DIR" ]] && { echo "Notes directory not found: $NOTES_DIR"; exit 1; }
+        if [[ -n "$2" ]]; then
+            FILE="$NOTES_DIR/$2.md"
+        else
+            FILE=$(pick_note)
+            [[ -z "$FILE" ]] && exit 0
+            FILE="$NOTES_DIR/$FILE"
+        fi
+        [[ ! -f "$FILE" ]] && { echo "Note not found: $FILE"; exit 1; }
+        read -rp "Delete $(basename "$FILE")? [y/N] " CONFIRM
+        case "$CONFIRM" in
+            y|Y|yes|YES) rm -- "$FILE" && echo "Deleted." ;;
+            *)           echo "Cancelled." ;;
+        esac
+        ;;
+    -s)
+        dotfiles add "$NOTES_DIR/"
+        dotfiles commit -m "sync: notes - $(date '+%Y-%m-%d %H:%M')" || echo "Nothing to commit"
+        dotfiles push
+        ;;
+    -h|--help)
+        usage
+        ;;
+    -*)
+        echo "Unknown option: $1"
+        usage
+        ;;
+    *)
+        mkdir -p "$NOTES_DIR"
+        if [[ -n "$1" ]]; then
+            FILE="$NOTES_DIR/$1.md"
+            [[ ! -f "$FILE" ]] && { echo "Note not found: $FILE"; exit 1; }
+        else
+            FILE=$(pick_note)
+            [[ -z "$FILE" ]] && exit 0
+            FILE="$NOTES_DIR/$FILE"
+        fi
+        view_note "$FILE"
+        ;;
+esac
