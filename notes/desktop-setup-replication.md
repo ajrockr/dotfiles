@@ -101,11 +101,9 @@ source ~/.bashrc
 # Enable services
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now bluetooth   # if applicable
-
-# Verify wallpaper path — i3 config expects this file:
-ls ~/wallpapers/trees.jpg
-# If missing, update ~/.config/i3/config exec_always feh line or copy the file over
 ```
+
+`~/wallpapers/` is tracked in the dotfiles repo — both `trees.jpg` and `sebastian-unrau-sp-p7uuT0tw-unsplash.jpg` are restored automatically by `dotfiles checkout`. No manual copy needed.
 
 The `.bash_profile` already handles starting i3 via `xinit i3` on TTY1 — no display manager configuration needed.
 
@@ -123,6 +121,7 @@ The `.bash_profile` already handles starting i3 via `xinit i3` on TTY1 — no di
 | X          | `~/.Xresources`                                |
 | Shell      | `~/.bashrc`, `~/.bash_profile`                 |
 | Scripts    | `~/bin/`                                       |
+| Wallpapers | `~/wallpapers/`                                |
 
 ---
 
