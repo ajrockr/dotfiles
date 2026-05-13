@@ -1,0 +1,277 @@
+#!/bin/bash
+# Bootstrap script — replicates full Arch + i3 setup from dotfiles repo.
+# Run as your regular user (not root) on a fresh Arch install.
+set -euo pipefail
+
+# ── colors / helpers ─────────────────────────────────────────────────────────
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+info()  { echo -e "${GREEN}  ==>${NC} $1"; }
+warn()  { echo -e "${YELLOW}  -->${NC} $1"; }
+error() { echo -e "${RED}  ERR${NC} $1"; exit 1; }
+step()  { echo -e "\n${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; \
+          echo -e "${BLUE}  $1${NC}"; \
+          echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; }
+confirm() { read -rp "  $1 [y/N] " _r; [[ "$_r" =~ ^[yY] ]]; }
+
+DOTFILES_REPO="git@github.com:ajrockr/dotfiles.git"
+DOTFILES_DIR="$HOME/.dotfiles"
+
+# ── pre-flight ────────────────────────────────────────────────────────────────
+step "Pre-flight checks"
+[[ $EUID -eq 0 ]] && error "Run as your regular user, not root."
+command -v pacman >/dev/null 2>&1 || error "pacman not found — this script requires Arch Linux."
+info "User: $(whoami)"
+info "Host: $(hostname)"
+
+# ── packages ──────────────────────────────────────────────────────────────────
+PACMAN_PKGS=(
+    # build tools
+    base-devel git openssh wget unzip man-db sudo
+    # X11 core
+    xorg-server xorg-xinit xorg-xrandr xorg-xsetroot xorg-xset xorg-xev
+    xorg-xkill xorg-xinput xorg-xdpyinfo xorg-xbacklight xorg-xhost
+    xorg-xwayland xorg-iceauth xorg-mkfontscale xorg-font-util
+    xorg-fonts-75dpi xorg-fonts-100dpi xorg-bdftopcf
+    xorg-server-xephyr xorg-server-xvfb xorg-server-xnest
+    xsettingsd xss-lock numlockx xdg-user-dirs xdg-utils
+    # WM / bar
+    i3-wm polybar feh dex i3lock i3status i3blocks dmenu
+    # terminal
+    rxvt-unicode xterm
+    # launcher / utilities
+    rofi fzf glow htop lshw smartmontools reflector dialog unzip wget
+    # fonts
+    ttf-jetbrains-mono ttf-jetbrains-mono-nerd otf-font-awesome
+    noto-fonts ttf-dejavu ttf-droid ttf-liberation ttf-roboto
+    ttf-ubuntu-font-family terminus-font
+    # themes / icons
+    papirus-icon-theme lxappearance gnome-themes-extra
+    # file manager
+    ranger ueberzugpp
+    # editors
+    vim neovim
+    # audio
+    pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber
+    gst-plugin-pipewire libpulse
+    # network
+    networkmanager network-manager-applet iwd iw wpa_supplicant
+    # keyring
+    gnome-keyring
+    # bluetooth
+    bluez bluez-utils
+    # display manager
+    lightdm lightdm-gtk-greeter
+    # printing
+    cups cups-pk-helper system-config-printer
+    # virtualization
+    libvirt qemu-full virt-manager virt-viewer swtpm dkms
+    # remote desktop
+    remmina freerdp
+    # dev tools
+    nodejs npm rust-analyzer github-cli
+    # php
+    php php-gd php-pgsql composer
+    # filesystem / system
+    btrfs-progs snapper zram-generator efibootmgr power-profiles-daemon
+    # firewall
+    ufw
+    # media / browser
+    vlc firefox
+    # gaming
+    steam
+    # misc
+    xf86-video-vesa
+)
+
+AUR_PKGS=(
+    dracula-gtk-theme-full
+    graphite-gtk-theme
+    sweet-gtk-theme
+    sweet-gtk-theme-dark
+    tokyonight-gtk-theme-git
+    iwgtk
+    nmgui-bin
+    neofetch
+    remmina-plugin-rdesktop
+    proton-ge-custom-bin
+)
+
+# ── hardware prompts ──────────────────────────────────────────────────────────
+step "Hardware configuration"
+
+echo "  CPU microcode — which CPU does this machine have?"
+echo "    1) Intel"
+echo "    2) AMD"
+echo "    3) Skip"
+read -rp "  Choice [1-3]: " CPU_CHOICE
+case "$CPU_CHOICE" in
+    1) PACMAN_PKGS+=(intel-ucode) ;;
+    2) PACMAN_PKGS+=(amd-ucode) ;;
+    *) warn "Skipping CPU microcode." ;;
+esac
+
+echo ""
+echo "  GPU driver — which GPU does this machine have?"
+echo "    1) NVIDIA (nvidia-open-dkms)"
+echo "    2) AMD    (mesa xf86-video-amdgpu)"
+echo "    3) Intel  (mesa xf86-video-intel)"
+echo "    4) Skip"
+read -rp "  Choice [1-4]: " GPU_CHOICE
+case "$GPU_CHOICE" in
+    1) PACMAN_PKGS+=(nvidia-open-dkms libva-nvidia-driver) ;;
+    2) PACMAN_PKGS+=(mesa xf86-video-amdgpu) ;;
+    3) PACMAN_PKGS+=(mesa xf86-video-intel) ;;
+    *) warn "Skipping GPU driver." ;;
+esac
+
+# ── system update ─────────────────────────────────────────────────────────────
+step "Updating system"
+sudo pacman -Syu --noconfirm
+
+# ── paru ──────────────────────────────────────────────────────────────────────
+step "Installing paru (AUR helper)"
+if command -v paru >/dev/null 2>&1; then
+    info "paru already installed, skipping."
+else
+    sudo pacman -S --needed --noconfirm base-devel git
+    PARU_TMP=$(mktemp -d)
+    git clone https://aur.archlinux.org/paru.git "$PARU_TMP"
+    (cd "$PARU_TMP" && makepkg -si --noconfirm)
+    rm -rf "$PARU_TMP"
+    info "paru installed."
+fi
+
+# ── install packages ──────────────────────────────────────────────────────────
+step "Installing packages (official repos)"
+paru -S --needed --noconfirm "${PACMAN_PKGS[@]}"
+
+step "Installing AUR packages"
+paru -S --needed --noconfirm "${AUR_PKGS[@]}"
+
+# ── SSH setup ─────────────────────────────────────────────────────────────────
+step "SSH key setup"
+if [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then
+    ssh-keygen -t ed25519 -C "anjorizz@gmail.com" -f "$HOME/.ssh/id_ed25519" -N ""
+    info "SSH key generated."
+else
+    info "SSH key already exists, skipping."
+fi
+
+echo ""
+echo -e "  ${YELLOW}Add this public key to GitHub before continuing:${NC}"
+echo -e "  ${YELLOW}  https://github.com/settings/ssh/new${NC}"
+echo ""
+cat "$HOME/.ssh/id_ed25519.pub"
+echo ""
+confirm "Have you added the key to GitHub?" || error "Add the SSH key to GitHub and re-run."
+ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" \
+    && info "GitHub SSH auth confirmed." \
+    || warn "Could not verify GitHub auth — continuing anyway."
+
+# ── dotfiles ──────────────────────────────────────────────────────────────────
+step "Cloning dotfiles"
+if [[ -d "$DOTFILES_DIR" ]]; then
+    info "Dotfiles repo already exists at $DOTFILES_DIR, skipping clone."
+else
+    git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
+    info "Dotfiles cloned."
+fi
+
+dotfiles() { /usr/bin/git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"; }
+dotfiles config --local status.showUntrackedFiles no
+
+step "Checking out dotfiles"
+if dotfiles checkout 2>/dev/null; then
+    info "Checkout complete."
+else
+    warn "Conflicts detected — backing up existing files and retrying."
+    BACKUP_DIR="$HOME/.config-backup-$(date +%Y%m%d%H%M%S)"
+    mkdir -p "$BACKUP_DIR"
+    dotfiles checkout 2>&1 \
+        | grep "^\s" \
+        | awk '{print $1}' \
+        | while read -r f; do
+            mkdir -p "$BACKUP_DIR/$(dirname "$f")"
+            mv "$HOME/$f" "$BACKUP_DIR/$f"
+        done
+    dotfiles checkout
+    info "Checkout complete. Conflicts backed up to $BACKUP_DIR"
+fi
+
+# ── post-checkout fixes ───────────────────────────────────────────────────────
+step "Post-checkout configuration"
+
+# make bin scripts executable
+chmod +x "$HOME"/bin/*
+info "bin/ scripts marked executable."
+
+# ensure .xinitrc loads .Xresources before launching i3
+if ! grep -q "xrdb" "$HOME/.xinitrc"; then
+    sed -i 's/^exec i3/xrdb -merge ~\/.Xresources\nexec i3/' "$HOME/.xinitrc"
+    info ".xinitrc: added xrdb -merge line."
+else
+    info ".xinitrc: xrdb already present, skipping."
+fi
+
+# remove i3-config-wizard exec line from i3 config
+if grep -q "^exec i3-config-wizard" "$HOME/.config/i3/config"; then
+    sed -i 's/^exec i3-config-wizard/#exec i3-config-wizard/' "$HOME/.config/i3/config"
+    info "i3 config: commented out i3-config-wizard."
+else
+    info "i3 config: i3-config-wizard already removed, skipping."
+fi
+
+# create wallpapers dir and warn if the expected file is missing
+mkdir -p "$HOME/wallpapers"
+if [[ ! -f "$HOME/wallpapers/trees.jpg" ]]; then
+    warn "~/wallpapers/trees.jpg not found — copy it over or update the feh line in ~/.config/i3/config."
+fi
+
+# ── vundle + vim plugins ──────────────────────────────────────────────────────
+step "Bootstrapping Vundle and installing vim plugins"
+VUNDLE_DIR="$HOME/.vim/bundle/Vundle.vim"
+if [[ -d "$VUNDLE_DIR/.git" ]]; then
+    info "Vundle already present, skipping clone."
+else
+    git clone https://github.com/VundleVim/Vundle.vim.git "$VUNDLE_DIR"
+    info "Vundle cloned."
+fi
+vim +PluginInstall +qall 2>/dev/null && info "Vim plugins installed." \
+    || warn "Vim plugin install returned non-zero — check manually with :PluginInstall"
+
+# ── XDG user dirs ─────────────────────────────────────────────────────────────
+step "Setting up XDG user directories"
+xdg-user-dirs-update
+info "User dirs updated."
+
+# ── systemd services ──────────────────────────────────────────────────────────
+step "Enabling services"
+SERVICES=(
+    NetworkManager
+    bluetooth
+    lightdm
+    cups
+    libvirtd
+    ufw
+)
+for svc in "${SERVICES[@]}"; do
+    if systemctl list-unit-files --quiet "$svc.service" 2>/dev/null | grep -q "$svc"; then
+        sudo systemctl enable "$svc"
+        info "Enabled: $svc"
+    else
+        warn "Not found, skipping: $svc"
+    fi
+done
+
+# ── summary ───────────────────────────────────────────────────────────────────
+step "Setup complete"
+echo ""
+echo -e "  ${GREEN}All done. Next steps:${NC}"
+echo ""
+echo "  1. Copy ~/wallpapers/trees.jpg from your old machine (or update i3 config)."
+echo "  2. Log in on TTY1 — .bash_profile will auto-start i3 via xinit."
+echo "  3. Run 'polybar-msg' or check /tmp/polybar.log if the bar doesn't appear."
+echo "  4. Verify audio: pipewire-pulse should start automatically with your session."
+echo ""
+echo -e "  ${YELLOW}Hardware note:${NC} if the GPU driver was changed, reboot before starting X."
+echo ""
