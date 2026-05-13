@@ -4,36 +4,13 @@ Custom `ls` color config at `~/.dircolors`. Sets `LS_COLORS` for GNU `ls --color
 
 ---
 
-## Current status — two issues to fix
+## Replication steps (on the new machine)
 
-### 1. Not tracked in dotfiles
-
-`.dircolors` has never been added to the dotfiles repo. Add it now:
-
-```bash
-dotfiles-sync -a ~/.dircolors
-dotfiles-sync -c "track .dircolors"
-```
-
-### 2. Not loaded in `.bashrc`
-
-`.bashrc` has no `dircolors` eval line, so the custom palette has no effect — `ls` falls back to the compiled-in defaults. Add this line to `~/.bashrc` (after the aliases):
+`dotfiles checkout` will restore the file. `.bashrc` loads it automatically via:
 
 ```bash
 [ -f ~/.dircolors ] && eval "$(dircolors ~/.dircolors)"
 ```
-
-Then sync:
-
-```bash
-dotfiles-sync -c "load .dircolors in .bashrc"
-```
-
----
-
-## Replication steps (on the new machine)
-
-Once the above fixes are applied and synced, `dotfiles checkout` will restore the file. Then ensure `.bashrc` contains the eval line above — it will be there once the fix is committed.
 
 No additional packages needed. `dircolors` ships with `coreutils` which is always present.
 
