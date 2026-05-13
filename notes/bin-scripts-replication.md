@@ -8,6 +8,7 @@ Personal scripts tracked at `~/bin/`. All are on `PATH` via `.bashrc` (`$HOME/bi
 
 | Script | Purpose |
 |--------|---------|
+| `~/bin/arch-setup` | Full system bootstrap — packages, dotfiles, services |
 | `~/bin/dotfiles-sync` | Commit and push dotfiles to GitHub |
 | `~/bin/notes` | Unified note management — create, view, delete, push |
 
@@ -35,6 +36,35 @@ chmod +x ~/bin/*
 ---
 
 ## Script reference
+
+### `arch-setup`
+
+Full system bootstrap script. Run on a fresh Arch install to replicate the entire setup.
+On a new machine before dotfiles are checked out, download it directly:
+
+```bash
+curl -o arch-setup https://raw.githubusercontent.com/ajrockr/dotfiles/main/bin/arch-setup
+chmod +x arch-setup && ./arch-setup
+```
+
+What it does, in order:
+
+1. Prompts for CPU (intel-ucode / amd-ucode) and GPU (NVIDIA / AMD / Intel) drivers
+2. Updates the system via `pacman -Syu`
+3. Bootstraps `paru` (AUR helper)
+4. Installs all official and AUR packages
+5. Generates SSH key, prints the public key, waits for GitHub confirmation
+6. Clones the dotfiles bare repo and checks out all configs
+7. Backs up any conflicting files with a timestamp
+8. Marks `~/bin/` scripts executable
+9. Fixes `.xinitrc` (adds `xrdb -merge ~/.Xresources` before `exec i3`)
+10. Comments out `i3-config-wizard` in i3 config
+11. Bootstraps Vundle and installs vim plugins
+12. Enables systemd services (NetworkManager, bluetooth, lightdm, cups, libvirtd, ufw)
+
+> After running, copy `~/wallpapers/trees.jpg` from the old machine or update the `feh` line in `~/.config/i3/config`.
+
+---
 
 ### `dotfiles-sync`
 
@@ -78,6 +108,7 @@ Unified note management script. All notes live in `~/notes/` and use `.md` exten
 
 ## Verify after setup
 
+- [ ] `which arch-setup` returns `~/bin/arch-setup`
 - [ ] `which dotfiles-sync` returns `~/bin/dotfiles-sync`
 - [ ] `which notes` returns `~/bin/notes`
 - [ ] `dotfiles-sync -s` shows repo status without errors
