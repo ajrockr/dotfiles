@@ -55,6 +55,8 @@ PACMAN_PKGS=(
     gst-plugin-pipewire libpulse
     # network
     networkmanager network-manager-applet iwd iw wpa_supplicant
+    # domain SMB share access via Kerberos (no domain join required)
+    krb5 smbclient cifs-utils
     # keyring
     gnome-keyring
     # bluetooth
@@ -274,4 +276,5 @@ echo "  3. Run 'polybar-msg' or check /tmp/polybar.log if the bar doesn't appear
 echo "  4. Verify audio: pipewire-pulse should start automatically with your session."
 echo ""
 echo -e "  ${YELLOW}Hardware note:${NC} if the GPU driver was changed, reboot before starting X."
+echo -e "  ${YELLOW}SMB shares:${NC} edit /etc/krb5.conf with your domain details, then 'kinit user@DOMAIN.COM' before mounting. See notes/smb-kerberos-access.md."
 echo ""
